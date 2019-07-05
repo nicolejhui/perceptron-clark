@@ -141,7 +141,7 @@ def split_data_and_create_node(node):
 
 
 def partition_children():
-    child_node_dict = split_data_and_create_node(node)
+    child_node_dict = split_data_and_create_node()
 
 if __name__ == "__main__":
     entropy = get_entropy(all_examples)
