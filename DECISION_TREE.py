@@ -147,11 +147,12 @@ class Node:
                     # print(row)
                     split = np.append(split, np.array([example]), axis=0)
             child = Node(unique_val_of_best_attribute[unique_val], split)
-            print(child, child.name)
-            # print('conditional entropy before entropy assignment:' + str(conditional_entropy))
             child.entropy = child.con_entropy(best_idx)
             child.info_gain_dict = info_gain_dict
             child.split_feature = best_attribute_name
+            print(child.name, child, child.examples)
+            # print('conditional entropy before entropy assignment:' + str(conditional_entropy))
+
             '''if abs(child.entropy) < 0.001:
                 print('entropy is 0')
                 return
@@ -160,8 +161,8 @@ class Node:
             if info_gain_dict[best_attribute_name] < 0.001:
                 print('info gain is 0')
                 return'''
-            #child.split_node()
-            #michael also commented out the line above
+            # child.split_node()
+            # michael also commented out the line above
             # michael changed the line below hes probably wrong
             self.children[unique_val_of_best_attribute[unique_val]] = child
             # print(child, child.children)
@@ -186,24 +187,23 @@ class Node:
             child.split_node()
             child.partition_children()'''
 
-    #def build_tree(self, child, examples, used_feature, used_feature_values):
+    # def build_tree(self, child, examples, used_feature, used_feature_values):
     def build_tree(self):
         '''best_attribute_name, best_idx, best_attribute, ig_list, info_gain_dict, conditional_entropy = self.find_best_attribute()
         used_feature = best_idx
         used_feature_values = np.unique(best_attribute)'''
         self.split_node()
-        #print('children: ' + self.children.items())
+        # print('children: ' + self.children.items())
         for yeet, child in self.children.items():
             child.build_tree()
-
 
 
 if __name__ == "__main__":
     all_examples = pd.read_csv('Data/example_data', header=None)
     all_examples = all_examples.values
     root_node = Node("root", all_examples)
+    print(root_node.name, root_node)
     root_node.build_tree()
-    #michael changed it
 
 
 
