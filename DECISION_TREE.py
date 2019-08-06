@@ -107,9 +107,10 @@ class Node:
     def split_node(self):
         print('-----------------------------------NEXT CALL OF split_node--------------------------------------')
         # get best split
-        # print(str('STOP CONDITION CHECK. ENTROPY IS: ' + str(self.entropy)))
+        print(str('STOP CONDITION CHECK. ENTROPY IS: ' + str(self.entropy)))
         if abs(self.entropy) < 0.001:
-            # print('entropy is 0')
+            # self.predict_label()
+            print('entropy is 0')
             return
             # child.split_node()
             # if self.best_attribute_name:
@@ -117,15 +118,18 @@ class Node:
         best_attribute_name, best_idx, best_attribute, ig_list, info_gain_dict, conditional_entropy = self.find_best_attribute()
 
         if self.split_feature is not None:
-            # print('INFO GAIN: ' + str(self.info_gain_dict))
+            print('INFO GAIN: ' + str(self.info_gain_dict))
             if self.info_gain_dict[self.split_feature] < 0.001:
-                # print('info gain is 0')
+                # print(self.examples)
+                print('info gain is 0')
                 return
+
         # print('best_attribute column found in from previous function:', str(best_attribute))
         # split data based on the unique value of the best attribute
         # info_gain_dict = self.info_gain_dict
         # best_attribute_name = self.best_attribute_name
         unique_val_of_best_attribute = []
+        self.depth += 1
         for unique_val in np.unique(best_attribute):
             # print('unique value:', unique_val)
             unique_val_of_best_attribute.append(unique_val)
@@ -139,13 +143,30 @@ class Node:
             child.info_gain_dict = info_gain_dict
             child.split_feature = best_attribute_name
             print(child.name, child, child.examples)
-            # print('conditional entropy before entropy assignment:' + str(conditional_entropy))
-            # child.split_node()
-            # michael also commented out the line above
-            # michael changed the line below hes probably wrong
             self.children[unique_val_of_best_attribute[unique_val]] = child
-            for node_name, node in self.children.items():
-                node_name = str(node_name)
+        # print('children:', self.children)
+        # return self.children
+
+    # def build_tree(self, child, examples, used_feature, used_feature_values):
+    def build_tree(self):
+        self.split_node()
+        print('children of (self):', self.name, self, ':', str(self.children))
+        # child_node_list = []
+        self.depth += 1
+        for yeet, child in self.children.items():
+            print('next split node is called on:', yeet, child)
+            child.build_tree()
+            self.predict_label()
+            # print('children of:', child,  child.children)
+            # child_node_list.append(child.children)
+        # print('child node list', str(child_node_list))
+        return
+
+    def predict_label(self):
+        for node_name, node in self.children.items():
+            print('children of (self):', self.name, self, ':', str(self.children))
+            # node_name = str(node_name)
+            if node.children == {}:
                 example_label = [0, 0]
                 for example in node.examples:
                     if example[0] == '+':
@@ -153,39 +174,14 @@ class Node:
                     if example[0] == '-':
                         example_label[1] += 1
                 # print(example_label)
-                if example_label[0] == 0:
-                    node.prediction = '-'
-                if example_label[1] == 0:
+                if example_label[0] > example_label[1]:
                     node.prediction = '+'
-                if example_label[0] != 0:
-                    if example_label[0] > example_label[1]:
-                        node.prediction = '+'
-                    if example_label[1] > example_label[0]:
-                        node.prediction = '-'
-                if example_label[1] != 0:
-                    if example_label[0] > example_label[1]:
-                        node.prediction = '+'
-                    if example_label[1] > example_label[0]:b
-                        node.prediction = '-'
+                if example_label[1] > example_label[0]:
+                    node.prediction = '-'
                 if example_label[0] == example_label[1]:
                     node.prediction = '-'
-            print(('\t' * self.depth) + self.split_feature, '==', node_name, ':', node.prediction)
-        # print('children:', str(self.children))
-        return self.split_feature, node_name, node, node.prediction
-
-    # def build_tree(self, child, examples, used_feature, used_feature_values):
-    def build_tree(self):
-        self.split_node()
-        # print('children: ' + self.children.items())
-        # child_node_list = []
-        for yeet, child in self.children.items():
-            self.depth += 1
-            child.build_tree()
-            child.children = self.children
-            # print('children (build tree function):', child.children)
-            # child_node_list.append(child.children)
-        # print('child node list', str(child_node_list))
-        return self.children
+                print(('\t' * self.depth) + self.split_feature, '==', node_name, ':', node.prediction)
+        return
 
     # def print_tree(self):
     #     self.split_feature, node_name, node, node.prediction = self.split_node()
@@ -199,7 +195,6 @@ if __name__ == "__main__":
     root_node = Node("root", all_examples)
     print(root_node.name, root_node)
     root_node.build_tree()
-    # root_node.print_tree()
 
 
 
