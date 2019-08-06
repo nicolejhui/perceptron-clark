@@ -157,6 +157,16 @@ class Node:
                     node.prediction = '-'
                 if example_label[1] == 0:
                     node.prediction = '+'
+                if example_label[0] != 0:
+                    if example_label[0] > example_label[1]:
+                        node.prediction = '+'
+                    if example_label[1] > example_label[0]:
+                        node.prediction = '-'
+                if example_label[1] != 0:
+                    if example_label[0] > example_label[1]:
+                        node.prediction = '+'
+                    if example_label[1] > example_label[0]:b
+                        node.prediction = '-'
                 if example_label[0] == example_label[1]:
                     node.prediction = '-'
             print(('\t' * self.depth) + self.split_feature, '==', node_name, ':', node.prediction)
@@ -169,6 +179,7 @@ class Node:
         # print('children: ' + self.children.items())
         # child_node_list = []
         for yeet, child in self.children.items():
+            self.depth += 1
             child.build_tree()
             child.children = self.children
             # print('children (build tree function):', child.children)
