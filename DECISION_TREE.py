@@ -152,7 +152,6 @@ class Node:
         self.split_node()
         print('children of (self):', self.name, self, ':', str(self.children))
         # child_node_list = []
-        self.depth += 1
         for yeet, child in self.children.items():
             print('next split node is called on:', yeet, child)
             child.build_tree()
@@ -164,7 +163,7 @@ class Node:
 
     def predict_label(self):
         for node_name, node in self.children.items():
-            print('children of (self):', self.name, self, ':', str(self.children))
+            # print('children of (self):', self.name, self, ':', str(self.children))
             # node_name = str(node_name)
             if node.children == {}:
                 example_label = [0, 0]
@@ -180,13 +179,12 @@ class Node:
                     node.prediction = '-'
                 if example_label[0] == example_label[1]:
                     node.prediction = '-'
-                print(('\t' * self.depth) + self.split_feature, '==', node_name, ':', node.prediction)
-        return
+                print(self.split_feature, '==', node_name, ':', node.prediction)
+        return node_name, node, node.prediction, self.split_feature
 
-    # def print_tree(self):
-    #     self.split_feature, node_name, node, node.prediction = self.split_node()
-    #     for yeet, child in self.children.items():
-    #         print(('\t' * self.depth) + self.split_feature, '==', node_name, ':', node.prediction)
+    def print_tree(self):
+        node_name, node, node.prediction, self.split_feature = self.predict_label()
+        print(self.split_feature, '==', node_name, ':', node.prediction)
 
 
 if __name__ == "__main__":
