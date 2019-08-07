@@ -2,7 +2,10 @@ import numpy as np
 import pandas as pd
 
 # print(data)
-attributes_list = ["X1", "X2"]
+attributes_list = ['cap-shape', 'cap-surface', 'cap-color', 'bruises?', 'odor', 'gill-attachment', 'gill-spacing',
+                 'gill-size', 'gill-color', 'stalk-shape', 'stalk-root', 'stalk-surface-above-ring',
+                 'stalk-surface-below-ring', 'stalk-color-above-ring', 'stalk-color-below-ring', 'veil-type',
+                 'veil-color', 'ring-number', 'ring-type', 'spore-print-color', 'population', 'habitat', 'root']
 # where each attribute correlates with a column
 
 # root_node = Node("root")
@@ -45,9 +48,9 @@ class Node:
             # print('example:', str(example))
             if example[attribute_col] not in conditional_array:
                 conditional_array[example[attribute_col]] = [0, 0]
-            if example[0] == '+':
+            if example[0] == 'e':
                 conditional_array[example[attribute_col]][0] += 1
-            if example[0] == '-':
+            if example[0] == 'p':
                 conditional_array[example[attribute_col]][1] += 1
         conditional_entropy = 0
         for unique_var, counts, in conditional_array.items():
@@ -129,34 +132,44 @@ class Node:
         # info_gain_dict = self.info_gain_dict
         # best_attribute_name = self.best_attribute_name
         unique_val_of_best_attribute = []
+        unique_val_number_key = []
+        unique_val_number_key_count = 0
         self.depth += 1
         for unique_val in np.unique(best_attribute):
             # print('unique value:', unique_val)
+            unique_val_number_key_count += 1
+            # print('unique value number key', unique_val_number_key)
+            unique_val_number_key.append(unique_val_number_key_count)
             unique_val_of_best_attribute.append(unique_val)
+            # print(unique_val_of_best_attribute)
+            # print(unique_val_number_key)
+            unique_val_dict = dict(zip(unique_val_number_key, unique_val_of_best_attribute))
+            # print(unique_val_dict)
+            # print(unique_val_dict[unique_val_number_key_count])
             split = np.empty((0, all_examples.shape[1]), int)
             for example in self.examples:
                 if example[best_idx] == unique_val:
                     # print(row)
                     split = np.append(split, np.array([example]), axis=0)
-            child = Node(unique_val_of_best_attribute[unique_val], split, depth=self.depth+1)
+            child = Node(unique_val_dict[unique_val_number_key_count], split, depth=self.depth+1)
             child.entropy = child.con_entropy(best_idx)
             child.info_gain_dict = info_gain_dict
             child.split_feature = best_attribute_name
             # print(child.name, child, child.examples)
-            self.children[unique_val_of_best_attribute[unique_val]] = child
+            self.children[unique_val_dict[unique_val_number_key_count]] = child
         # print('children:', self.children)
         # return self.children
 
     # def build_tree(self, child, examples, used_feature, used_feature_values):
     def build_tree(self):
         self.split_node()
-        # print('children of (self):', self.name, self, ':', str(self.children))
+        # print('children of (self):', self.name, ':', str(self.children))
         # child_node_list = []
         for yeet, child in self.children.items():
-            # print('next split node is called on:', yeet, child)
+            # print('next split node is called on:', yeet)
             child.build_tree()
             self.predict_label()
-            # print('children of:', child,  child.children)
+            # print('children of:', child.name, child,  child.children)
             # child_node_list.append(child.children)
         # print('child node list', str(child_node_list))
         return
@@ -168,17 +181,17 @@ class Node:
             if node.children == {}:
                 example_label = [0, 0]
                 for example in node.examples:
-                    if example[0] == '+':
+                    if example[0] == 'e':
                         example_label[0] += 1
-                    if example[0] == '-':
+                    if example[0] == 'p':
                         example_label[1] += 1
                 # print(example_label)
                 if example_label[0] > example_label[1]:
-                    node.prediction = '+'
+                    node.prediction = 'edible'
                 if example_label[1] > example_label[0]:
-                    node.prediction = '-'
+                    node.prediction = 'poisonous'
                 if example_label[0] == example_label[1]:
-                    node.prediction = '-'
+                    node.prediction = 'poisonous'
                 # print(self.split_feature, '==', node_name, ':', node.prediction)
         return node_name, node, node.prediction, self.split_feature
 
@@ -187,19 +200,19 @@ class Node:
         # print(self.children)
         for node_name, node in self.children.items():
             # print(node, node_name, node.prediction)
-            if node.prediction is None:
+            if node.children != {}:
                 print('\t' * self.depth + f'{self.split_feature} == {node_name}')
                 node.print_tree()
             else:
-                print('\t' * self.depth + f'{self.split_feature} == {node_name}')
-                print('\t' * (self.depth + 1) + f'terminal node, y = {node.prediction}')
+                print('\t' * self.depth + f'{self.split_feature} == {node_name} : {node.prediction}')
+                # print('\t' * (self.depth + 1) + f'{node.prediction}')
 
 
 if __name__ == "__main__":
-    all_examples = pd.read_csv('Data/example_data', header=None)
+    all_examples = pd.read_csv('Data/mush_train.data', header=None)
     all_examples = all_examples.values
     root_node = Node("root", all_examples)
-    print(root_node.name)
+    print("root node:", root_node.name)
     root_node.build_tree()
     root_node.print_tree()
 
