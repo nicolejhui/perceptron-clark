@@ -28,13 +28,13 @@ if __name__ == "__main__":
     w = 2
     z = 8
     total_addition = addition(x, y)
-    print(total_addition)
+    print(str(x), '+', str(y), '=', total_addition)
     total_subtraction = subtraction(x, y)
-    print(total_subtraction)
+    print(str(x), '-', str(y), '=',total_subtraction)
     total_multiplication = multiply(x, y)
-    print(total_multiplication)
+    print(str(x), '*', str(y), '=', total_multiplication)
     total_division = divide(x, y)
-    print(total_division)
+    print(str(x), '/', str(y), '=', total_division)
     total_fun_time = fun_time(w, x, y, z)
-    print(total_fun_time)
+    print('(', str(x), '+', str(y), ')', '*', '(', str(w), '-', str(z), ')', '=', total_fun_time)
 
